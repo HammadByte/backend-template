@@ -4,11 +4,10 @@ import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
 
-import connectDB from "./src/config/db.js";
-import authRoutes from './src/routes/auth.routes.js'
-import userRoutes from "./src/routes/user.routes.js";
-import errorMiddleware from "./src/middlewares/error.middleware.js";
-const PORT = process.env.PORT || 5000;
+import connectDB from "../src/config/db.js";
+import authRoutes from '../src/routes/auth.routes.js';
+import userRoutes from "../src/routes/user.routes.js";
+import errorMiddleware from "../src/middlewares/error.middleware.js";
 
 const app = express();
 dotenv.config();
@@ -23,9 +22,9 @@ app.use("/api/users", userRoutes);
 
 app.use(errorMiddleware);
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+app.get("/", (req, res) => {
+res.send("ESM Backend running on Vercel 🚀");
+})
 
 export default app;
 
