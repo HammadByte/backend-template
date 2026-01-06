@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login & Signup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      background: #fff;
+      width: 360px;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #667eea;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: #5a67d8;
+    }
+
+    .toggle {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .toggle span {
+      color: #667eea;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .message {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- REGISTER -->
+    <div id="registerBox">
+      <h2>Create Account</h2>
+
+      <input type="text" id="regName" placeholder="Name" />
+      <input type="email" id="regEmail" placeholder="Email" />
+      <input type="password" id="regPassword" placeholder="Password" />
+
+      <button onclick="register()">Sign Up</button>
+
+      <div class="toggle">
+        Already have an account?
+        <span onclick="showLogin()">Login</span>
+      </div>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="loginBox" class="hidden">
+      <h2>Welcome Back</h2>
+
+      <input type="email" id="logEmail" placeholder="Email" />
+      <input type="password" id="logPassword" placeholder="Password" />
+
+      <button onclick="login()">Login</button>
+
+      <div class="toggle">
+        New here?
+        <span onclick="showRegister()">Create account</span>
+      </div>
+    </div>
+
+    <div id="message" class="message"></div>
+  </div>
+
+  <script>
+    const BACKEND_URL = "https://backend-template-tau.vercel.app/"; // 🔴 CHANGE THIS
+
+    const registerBox = document.getElementById("registerBox");
+    const loginBox = document.getElementById("loginBox");
+    const message = document.getElementById("message");
+
+    function showLogin() {
+      registerBox.classList.add("hidden");
+      loginBox.classList.remove("hidden");
+      message.innerText = "";
+    }
+
+    function showRegister() {
+      loginBox.classList.add("hidden");
+      registerBox.classList.remove("hidden");
+      message.innerText = "";
+    }
+
+    async function register() {
+      const name = document.getElementById("regName").value;
+      const email = document.getElementById("regEmail").value;
+      const password = document.getElementById("regPassword").value;
+
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/auth/register`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, password })
+        });
+
+        const data = await res.json();
+        message.innerText = data.message || "Registered successfully!";
+        message.style.color = "green";
+        showLogin();
+      } catch (err) {
+        message.innerText = "Registration failed";
+        message.style.color = "red";
+      }
+    }
+
+    async function login() {
+      const email = document.getElementById("logEmail").value;
+      const password = document.getElementById("logPassword").value;
+
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/auth/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.message);
+
+        message.innerText = "Login successful!";
+        message.style.color = "green";
+
+        // Optional: save token
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+        }
+
+      } catch (err) {
+        message.innerText = err.message || "Login failed";
+        message.style.color = "red";
+      }
+    }
+  </script>
+
+</body>
+</html>
